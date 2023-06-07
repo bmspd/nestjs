@@ -19,8 +19,8 @@ export class AuthService {
     return result;
   }
   public async login(user) {
-    const token = await this.generateToken(user);
-    return { user, token };
+    const tokens = await this.generateTokens(user);
+    return { user, ...tokens };
   }
   public async create(user) {
     const pass = await this.hashPassword(user.password);
@@ -28,13 +28,23 @@ export class AuthService {
 
     const { password, ...result } = newUser['dataValues'];
 
-    const token = await this.generateToken(result);
+    const tokens = await this.generateTokens({ id: result.id });
 
-    return { user: result, token };
+    return { user: result, ...tokens };
   }
-  private async generateToken(user) {
-    const token = await this.jwtService.signAsync(user);
-    return token;
+  private async generateTokens(user) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(user),
+      this.jwtService.signAsync(user, {
+        secret: process.env.JWT_REFRESH_TOKEN,
+        expiresIn: process.env.TOKEN_REFRESH_EXPIRATION,
+      }),
+    ]);
+    return { accessToken, refreshToken };
+  }
+  public async refreshTokens(user) {
+    const tokens = await this.generateTokens(user);
+    return { ...tokens };
   }
   private async hashPassword(password) {
     const hash = await bcrypt.hash(password, 10);
