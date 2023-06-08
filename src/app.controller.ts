@@ -11,6 +11,7 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('/1')
   getOne(): string {
