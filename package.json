@@ -17,7 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migration:generate": "sequelize-cli migration:generate --name",
+    "migrate": "sequelize-cli db:migrate"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -38,7 +40,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "sequelize": "^6.32.0",
-    "sequelize-cli": "^6.6.0",
+    "sequelize-cli": "^6.3.0",
     "sequelize-typescript": "^2.1.5",
     "typescript": "^4.9.5"
   },
