@@ -5,11 +5,13 @@ import {
   Request,
   Body,
   Get,
+  UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UserDto } from '../users/dto/user.dto';
 import { IsUserExists } from '../../core/guards/isUserExists.guard';
+import { SignupPipe } from './signup.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -17,14 +19,13 @@ export class AuthController {
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  async login(@Body() credentials) {
-    console.log(credentials);
-    return await this.authService.login(credentials);
+  async login(@Request() req, @Body() credentials) {
+    return await this.authService.login(req.user);
   }
 
   @UseGuards(IsUserExists)
   @Post('signup')
-  async signUp(@Body() user: UserDto) {
+  async signUp(@Body(SignupPipe) user: UserDto) {
     return await this.authService.create(user);
   }
 
@@ -32,6 +33,9 @@ export class AuthController {
   @Get('refresh')
   async refresh(@Request() req) {
     const user = req.user;
-    return await this.authService.refreshTokens({ id: user.id });
+    return await this.authService.refreshTokens({
+      id: user.id,
+      username: user.username,
+    });
   }
 }

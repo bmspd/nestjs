@@ -1,0 +1,3 @@
+export const DEFAULT_MINIMUM_CHAR_LENGTH = 4;
+export const DEFAULT_MAXIMUM_CHAR_LENGTH = 24;
+export const MINIMUM_PASSWORD_LENGTH = 6;

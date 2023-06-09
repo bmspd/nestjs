@@ -17,11 +17,17 @@ export class IsUserExists implements CanActivate {
     return this.validateRequest(request);
   }
   async validateRequest(request) {
-    const userExists = await this.userService.findOneByEmail(
-      request.body.email,
-    );
+    let userExists = await this.userService.findOneByEmail(request.body.email);
     if (userExists) {
       throw new ForbiddenException('This email already exists');
+    }
+    if (request.body.username) {
+      userExists = await this.userService.findOneByUsername(
+        request.body.username,
+      );
+      if (userExists) {
+        throw new ForbiddenException('This username already exists');
+      }
     }
     return true;
   }

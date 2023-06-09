@@ -1,7 +1,20 @@
-import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import {
+  DEFAULT_MAXIMUM_CHAR_LENGTH,
+  DEFAULT_MINIMUM_CHAR_LENGTH,
+  MINIMUM_PASSWORD_LENGTH,
+} from '../../../core/constants/validation';
 
 export class UserDto {
-  @IsNotEmpty()
+  @IsOptional()
+  @MinLength(DEFAULT_MINIMUM_CHAR_LENGTH)
+  @MaxLength(DEFAULT_MAXIMUM_CHAR_LENGTH)
   readonly username: string;
 
   @IsNotEmpty()
@@ -9,10 +22,12 @@ export class UserDto {
   readonly email: string;
 
   @IsNotEmpty()
-  @MinLength(6)
+  @MinLength(MINIMUM_PASSWORD_LENGTH)
+  @MaxLength(DEFAULT_MAXIMUM_CHAR_LENGTH)
   readonly password: string;
 
   @IsOptional()
-  @MinLength(4)
+  @MinLength(DEFAULT_MINIMUM_CHAR_LENGTH)
+  @MaxLength(DEFAULT_MAXIMUM_CHAR_LENGTH)
   readonly nickname?: string;
 }
