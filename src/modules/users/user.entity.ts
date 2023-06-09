@@ -1,4 +1,5 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, DataType, HasOne, Model, Table } from 'sequelize-typescript';
+import { Profile } from './profile/profile.entity';
 
 @Table
 export class User extends Model<User> {
@@ -27,4 +28,7 @@ export class User extends Model<User> {
     allowNull: true,
   })
   nickname: string;
+
+  @HasOne(() => Profile)
+  profile: Profile;
 }

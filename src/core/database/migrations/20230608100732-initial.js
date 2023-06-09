@@ -2,11 +2,13 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
+  /* !!! need to change !!!*/
   async up(queryInterface, Sequelize) {
-    return queryInterface.createTable('Users', {
-      name: {
+    await queryInterface.createTable('Users', {
+      username: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
+        unique: true,
       },
       email: {
         type: Sequelize.STRING,

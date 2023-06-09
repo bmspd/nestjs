@@ -9,6 +9,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { MailingModule } from './modules/mailing/mailing.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { ProfileModule } from './modules/users/profile/profile.module';
+import { RouterModule } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -22,9 +24,22 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       },
     }),
     DatabaseModule,
-    UsersModule,
     AuthModule,
     MailingModule,
+    UsersModule,
+    ProfileModule,
+    RouterModule.register([
+      {
+        path: 'user',
+        module: UsersModule,
+        children: [
+          {
+            path: 'profile',
+            module: ProfileModule,
+          },
+        ],
+      },
+    ]),
   ],
   controllers: [AppController],
   providers: [AppService, UsersService],

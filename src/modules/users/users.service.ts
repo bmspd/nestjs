@@ -1,17 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { USER_REPOSITORY } from '../../core/constants';
+import { PROFILE_REPOSITORY, USER_REPOSITORY } from '../../core/constants';
 import { User } from './user.entity';
 import { UserDto } from './dto/user.dto';
 import { Op } from 'sequelize';
+import { Profile } from './profile/profile.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepository: typeof User,
+    @Inject(PROFILE_REPOSITORY)
+    private readonly profileRepository: typeof Profile,
   ) {}
 
   async create(user: UserDto): Promise<User> {
-    return await this.userRepository.create<User>(user);
+    const newUser = await this.userRepository.create<User>(user);
+    const newProfile = await this.profileRepository.create<Profile>();
+    return newUser;
   }
 
   async findOneByEmail(email: string): Promise<User> {
