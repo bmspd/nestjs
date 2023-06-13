@@ -15,7 +15,7 @@ export class UsersService {
 
   async create(user: UserDto): Promise<User> {
     const newUser = await this.userRepository.create<User>(user);
-    const newProfile = await this.profileRepository.create<Profile>();
+    await this.profileRepository.create<Profile>({ user_id: newUser.id });
     return newUser;
   }
 
@@ -24,7 +24,10 @@ export class UsersService {
   }
 
   async findOneById(id: number): Promise<User> {
-    return await this.userRepository.findOne<User>({ where: { id } });
+    return await this.userRepository.findOne<User>({
+      where: { id },
+      include: { model: Profile },
+    });
   }
 
   async findOneByUsername(username: string): Promise<User> {

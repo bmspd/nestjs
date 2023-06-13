@@ -11,7 +11,7 @@ import { User } from '../user.entity';
 @Table
 export class Profile extends Model<Profile> {
   @ForeignKey(() => User)
-  id: number;
+  user_id: number;
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,

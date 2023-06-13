@@ -23,12 +23,6 @@ export class User extends Model<User> {
   })
   password: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
-  nickname: string;
-
   @HasOne(() => Profile)
   profile: Profile;
 }

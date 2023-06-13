@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Param } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -9,7 +9,16 @@ export class ProfileController {
   @UseGuards(AuthGuard('jwt'))
   @Get()
   async getProfileByUsername(@Request() req) {
-    console.log(req.user);
     return this.profileService.findOneById(req.user.id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/email-verify')
+  async verifyEmail(@Request() req) {
+    return this.profileService.sendEmailWithVerificationLink(req.user.id);
+  }
+  @Get('/email-verify/:hash')
+  async checkVerificationLink(@Param('hash') hash) {
+    return this.profileService.checkVerificationLink(hash);
   }
 }

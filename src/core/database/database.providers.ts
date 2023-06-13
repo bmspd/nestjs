@@ -24,8 +24,8 @@ export const databaseProviders = [
       }
       const sequelize = new Sequelize(config);
       sequelize.addModels([User, Profile]);
-      User.hasOne(Profile);
-      Profile.belongsTo(User);
+      User.hasOne(Profile, { foreignKey: 'user_id' });
+      Profile.belongsTo(User, { foreignKey: 'user_id' });
       await sequelize.sync();
       return sequelize;
     },
