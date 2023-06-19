@@ -26,7 +26,10 @@ export class AuthController {
   @UseGuards(IsUserExists)
   @Post('signup')
   async signUp(@Body(SignupPipe) user: UserDto) {
-    return await this.authService.create(user);
+    const newUser = await this.authService.create(user);
+    return {
+      message: `User with ${newUser.user.email} email was successfully registered`,
+    };
   }
 
   @UseGuards(AuthGuard('jwt-refresh'))
