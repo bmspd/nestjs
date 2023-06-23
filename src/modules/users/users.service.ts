@@ -4,6 +4,7 @@ import { User } from './user.entity';
 import { UserDto } from './dto/user.dto';
 import { Op } from 'sequelize';
 import { Profile } from './profile/profile.entity';
+import { CreateUserDto } from './dto/createUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,9 +14,12 @@ export class UsersService {
     private readonly profileRepository: typeof Profile,
   ) {}
 
-  async create(user: UserDto): Promise<User> {
+  async create(user: CreateUserDto): Promise<User> {
     const newUser = await this.userRepository.create<User>(user);
-    await this.profileRepository.create<Profile>({ user_id: newUser.id });
+    await this.profileRepository.create<Profile>({
+      user_id: newUser.id,
+      ...user,
+    });
     return newUser;
   }
 

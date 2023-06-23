@@ -6,12 +6,16 @@ import {
   Body,
   Get,
   UsePipes,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UserDto } from '../users/dto/user.dto';
 import { IsUserExists } from '../../core/guards/isUserExists.guard';
 import { SignupPipe } from './signup.pipe';
+import { CreateUserDto } from '../users/dto/createUser.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -25,7 +29,7 @@ export class AuthController {
 
   @UseGuards(IsUserExists)
   @Post('signup')
-  async signUp(@Body(SignupPipe) user: UserDto) {
+  async signUp(@Body(SignupPipe) user: CreateUserDto) {
     const newUser = await this.authService.create(user);
     return {
       message: `User with ${newUser.user.email} email was successfully registered`,
