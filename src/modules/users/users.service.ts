@@ -30,7 +30,10 @@ export class UsersService {
   async findOneById(id: number): Promise<User> {
     return await this.userRepository.findOne<User>({
       where: { id },
-      include: { model: Profile },
+      include: {
+        model: Profile,
+        attributes: { exclude: ['verify_link', 'id', 'user_id'] },
+      },
     });
   }
 
@@ -41,8 +44,13 @@ export class UsersService {
   async findOneByEmailOrUsername(value: string): Promise<User> {
     return await this.userRepository.findOne<User>({
       where: { [Op.or]: [{ email: value }, { username: value }] },
+      include: {
+        model: Profile,
+        attributes: { exclude: ['verify_link', 'id', 'user_id'] },
+      },
     });
   }
+
   async countAll(): Promise<number> {
     return await this.userRepository.count();
   }

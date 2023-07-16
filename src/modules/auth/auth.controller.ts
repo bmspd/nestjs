@@ -20,13 +20,22 @@ import { CreateUserDto } from '../users/dto/createUser.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Request() req, @Body() credentials) {
     return await this.authService.login(req.user);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get('login')
+  async loginByToken(@Request() req) {
+    return await this.authService.loginByToken(req.user);
+  }
+  @UseGuards()
+  @Post('login/google')
+  async loginByGoogle(@Body(SignupPipe) credentials) {
+    return await this.authService.loginByGoogle(credentials);
+  }
   @UseGuards(IsUserExists)
   @Post('signup')
   async signUp(@Body(SignupPipe) user: CreateUserDto) {
