@@ -6,13 +6,13 @@ export class User extends Model<User> {
   @Column({
     type: DataType.STRING,
     allowNull: true,
-    unique: true,
+    unique: 'username',
   })
   username: string;
 
   @Column({
     type: DataType.STRING,
-    unique: true,
+    unique: 'email',
     allowNull: false,
   })
   email: string;

@@ -3,6 +3,7 @@ import { SEQUELIZE, DEVELOPMENT, TEST, PRODUCTION } from '../constants';
 import { databaseConfig } from './database.config';
 import { User } from '../../modules/users/user.entity';
 import { Profile } from '../../modules/users/profile/profile.entity';
+import { Project } from 'src/modules/projects/project.entity';
 
 export const databaseProviders = [
   {
@@ -23,9 +24,11 @@ export const databaseProviders = [
           config = databaseConfig.development;
       }
       const sequelize = new Sequelize(config);
-      sequelize.addModels([User, Profile]);
+      sequelize.addModels([User, Profile, Project]);
       User.hasOne(Profile, { foreignKey: 'user_id' });
       Profile.belongsTo(User, { foreignKey: 'user_id' });
+      User.belongsToMany(Project, { through: 'User_Project' });
+      Project.belongsToMany(User, { through: 'User_Project' });
       await sequelize.sync();
       return sequelize;
     },

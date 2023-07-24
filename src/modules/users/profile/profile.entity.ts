@@ -22,7 +22,7 @@ export class Profile extends Model<Profile> {
   @Column({
     type: DataType.STRING,
     allowNull: true,
-    unique: true,
+    unique: 'verify_link',
   })
   verify_link: string;
 
