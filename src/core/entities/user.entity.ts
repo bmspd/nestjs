@@ -10,8 +10,8 @@ import {
   HasOneCreateAssociationMixin,
 } from 'sequelize';
 import { Column, DataType, HasOne, Model, Table } from 'sequelize-typescript';
-import { Project } from '../projects/project.entity';
-import { Profile } from './profile/profile.entity';
+import { Project } from './project.entity';
+import { Profile } from './profile.entity';
 
 @Table
 export class User extends Model<User> {

@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PROJECT_REPOSITORY, USER_REPOSITORY } from 'src/core/constants';
 import { CustomBadRequestExceptions } from 'src/core/exceptions/CustomBadRequestExceptions';
-import { User } from '../users/user.entity';
+import { User } from '../../core/entities/user.entity';
 import { CreateProjectDto } from './dto/project.dto';
-import { Project } from './project.entity';
+import { Project } from '../../core/entities/project.entity';
 
 @Injectable()
 export class ProjectsService {

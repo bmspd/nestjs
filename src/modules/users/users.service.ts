@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PROFILE_REPOSITORY, USER_REPOSITORY } from '../../core/constants';
-import { User } from './user.entity';
+import { User } from '../../core/entities/user.entity';
 import { Op } from 'sequelize';
-import { Profile } from './profile/profile.entity';
+import { Profile } from '../../core/entities/profile.entity';
 import { CreateUserDto } from './dto/createUser.dto';
 
 @Injectable()

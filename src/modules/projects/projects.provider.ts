@@ -1,5 +1,5 @@
 import { PROJECT_REPOSITORY } from 'src/core/constants';
-import { Project } from './project.entity';
+import { Project } from '../../core/entities/project.entity';
 
 export const projectProviders = [
   {

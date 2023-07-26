@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { PROFILE_REPOSITORY, USER_REPOSITORY } from '../../../core/constants';
-import { Profile } from './profile.entity';
-import { User } from '../user.entity';
+import { Profile } from '../../../core/entities/profile.entity';
+import { User } from '../../../core/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { MailingService } from '../../mailing/mailing.service';
 import { app } from '../../../main';

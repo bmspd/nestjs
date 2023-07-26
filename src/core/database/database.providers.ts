@@ -1,31 +1,10 @@
-import { Column, Model, Sequelize, Table } from 'sequelize-typescript';
+import { Sequelize } from 'sequelize-typescript';
 import { SEQUELIZE, DEVELOPMENT, TEST, PRODUCTION } from '../constants';
 import { databaseConfig } from './database.config';
-import { User } from '../../modules/users/user.entity';
-import { Profile } from '../../modules/users/profile/profile.entity';
-import { Project } from 'src/modules/projects/project.entity';
-import { DataTypes } from 'sequelize';
-
-@Table
-export class UserProject extends Model<UserProject> {
-  @Column({
-    type: DataTypes.INTEGER,
-    references: {
-      model: Project,
-      key: 'id',
-    },
-  })
-  project_id: number;
-
-  @Column({
-    type: DataTypes.INTEGER,
-    references: {
-      model: User,
-      key: 'id',
-    },
-  })
-  user_id: number;
-}
+import { User } from '../entities/user.entity';
+import { Profile } from '../entities/profile.entity';
+import { Project } from 'src/core/entities/project.entity';
+import { UserProject } from 'src/core/entities/userProject.entity';
 
 export const databaseProviders = [
   {
