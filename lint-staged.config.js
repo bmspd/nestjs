@@ -4,7 +4,7 @@ module.exports = {
 
   // This will lint and format TypeScript and JavaScript files
   '**/*.(ts|js)': (filenames) => [
-    `eslint --max-warnings=1 --fix ${filenames.join(' ')}`,
+    `eslint --max-warnings=0 --fix ${filenames.join(' ')}`,
     `prettier --write ${filenames.join(' ')}`,
   ],
 

@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PROFILE_REPOSITORY, USER_REPOSITORY } from '../../core/constants';
 import { User } from './user.entity';
-import { UserDto } from './dto/user.dto';
 import { Op } from 'sequelize';
 import { Profile } from './profile/profile.entity';
 import { CreateUserDto } from './dto/createUser.dto';

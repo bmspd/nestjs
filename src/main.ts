@@ -1,12 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {
-  BadRequestException,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidateInputPipe } from './core/pipes/validate.pipe';
 import { exceptionFactory } from './core/exceptions/utils';
 
 export let app: INestApplication;

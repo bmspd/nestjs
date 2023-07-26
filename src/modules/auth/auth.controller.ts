@@ -5,14 +5,9 @@ import {
   Request,
   Body,
   Get,
-  UsePipes,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { UserDto } from '../users/dto/user.dto';
 import { IsUserExists } from '../../core/guards/isUserExists.guard';
 import { SignupPipe } from './signup.pipe';
 import { CreateUserDto } from '../users/dto/createUser.dto';
@@ -22,7 +17,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  async login(@Request() req, @Body() credentials) {
+  async login(@Request() req) {
     return await this.authService.login(req.user);
   }
 
