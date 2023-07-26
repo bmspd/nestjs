@@ -6,6 +6,8 @@ import {
   BelongsToManyRemoveAssociationMixin,
   BelongsToManyCountAssociationsMixin,
   BelongsToManyCreateAssociationMixin,
+  HasOneGetAssociationMixin,
+  HasOneCreateAssociationMixin,
 } from 'sequelize';
 import { Column, DataType, HasOne, Model, Table } from 'sequelize-typescript';
 import { Project } from '../projects/project.entity';
@@ -33,8 +35,11 @@ export class User extends Model<User> {
   })
   password: string;
 
-  @HasOne(() => Profile)
+  @HasOne(() => Profile, { onDelete: 'CASCADE' })
   profile: Profile;
+
+  declare getProfile: HasOneGetAssociationMixin<Profile>;
+  declare createProfile: HasOneCreateAssociationMixin<Profile>;
 
   declare addProject: BelongsToManyAddAssociationMixin<Project, number>;
   declare addProjects: BelongsToManyAddAssociationMixin<Project, number>;

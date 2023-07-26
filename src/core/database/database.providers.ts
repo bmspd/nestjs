@@ -47,7 +47,7 @@ export const databaseProviders = [
       }
       const sequelize = new Sequelize(config);
       sequelize.addModels([User, Profile, Project, UserProject]);
-      User.hasOne(Profile, { foreignKey: 'user_id' });
+      User.hasOne(Profile, { foreignKey: 'user_id', onDelete: 'CASCADE' });
       Profile.belongsTo(User, { foreignKey: 'user_id' });
       User.belongsToMany(Project, {
         through: UserProject,

@@ -1,5 +1,8 @@
 import { IntersectionType } from '@nestjs/mapped-types';
 import { UserDto } from './user.dto';
-import { ProfileDto } from './profile.dto';
+import { CreateUpdateProfileDto } from './profile.dto';
 
-export class CreateUserDto extends IntersectionType(UserDto, ProfileDto) {}
+export class CreateUserDto extends IntersectionType(
+  UserDto,
+  CreateUpdateProfileDto,
+) {}
