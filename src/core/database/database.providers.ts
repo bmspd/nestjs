@@ -38,7 +38,8 @@ export const databaseProviders = [
         foreignKey: 'project_id',
         otherKey: 'user_id',
       });
-      await sequelize.sync();
+      const needAlter = true;
+      await sequelize.sync({ alter: needAlter });
       return sequelize;
     },
   },

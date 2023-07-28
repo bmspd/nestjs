@@ -11,7 +11,7 @@ import {
   Get,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { TrimTransformInterceptor } from 'src/core/interceptors/trime.interceptor';
+import { TrimTransformInterceptor } from 'src/core/interceptors/trim.interceptor';
 import { CreateProjectDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
 

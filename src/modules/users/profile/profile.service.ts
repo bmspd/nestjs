@@ -22,6 +22,7 @@ export class ProfileService {
     const profile = await this.findOneByLinkHash(hash);
     if (!profile) throw new BadRequestException();
     profile.verify_link = null;
+    profile.link_sent = null;
     profile.email_verified = true;
     await profile.save();
     return { message: 'Email successfully verified' };
@@ -52,20 +53,22 @@ export class ProfileService {
       where: { user_id: id },
       include: { model: User },
     });
+    profile.link_sent = new Date();
     profile.verify_link = hash;
     await profile.save();
     const encodedHash = encodeURIComponent(hash);
     const url = await app.getUrl();
     await this.mailingService.sendMail({
-      to: ['bmspd.test@gmail.com'],
+      to: [profile.user.email],
       context: {
         clickLink: `${url}/api/user/profile/email-verify/${encodedHash}`,
-        username: 'bmspd',
+        username: profile.user.username,
       },
       subject: 'Test Email Verification',
       template: 'email-verification',
     });
     return {
+      link_sent: profile.link_sent,
       message: `Email with verification link sent to ${profile.user.email}`,
     };
   }

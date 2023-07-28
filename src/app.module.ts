@@ -19,7 +19,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
     MailerModule.forRoot({
       transport: 'smtps://user@domain.com:pass@smtp.domain.com',
       template: {
-        dir: process.cwd() + '/templates',
+        dir: process.cwd() + '/src/core/templates',
         adapter: new HandlebarsAdapter(),
         options: { strict: true },
       },

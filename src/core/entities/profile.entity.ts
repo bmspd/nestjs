@@ -20,6 +20,12 @@ export class Profile extends Model<Profile> {
   email_verified: boolean;
 
   @Column({
+    type: DataType.DATE,
+    defaultValue: null,
+  })
+  link_sent: Date;
+
+  @Column({
     type: DataType.STRING,
     allowNull: true,
     unique: 'verify_link',

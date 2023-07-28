@@ -27,6 +27,7 @@ export class MailingService {
     const accessToken: string = await new Promise((resolve, reject) => {
       oauth2Client.getAccessToken((err, token) => {
         if (err) {
+          console.log(err, token);
           reject('Failed to create access token');
           this.logger.log('Failed to create access token');
         }
