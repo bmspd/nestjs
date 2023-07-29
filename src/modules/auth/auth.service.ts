@@ -20,6 +20,7 @@ export class AuthService {
     const match = await this.comparePasswords(pass, user.password);
     if (!match) return null;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, profile, ...result } = user['dataValues'];
     return result;
   }
@@ -42,6 +43,7 @@ export class AuthService {
   public async loginByGoogle(user) {
     const userData = await this.userService.findOneByEmail(user.email);
     if (userData) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, username, password, ...rest } = userData['dataValues'];
       const tokens = await this.generateTokens({ id, username });
       return { id, username, ...rest, ...tokens };
@@ -51,9 +53,11 @@ export class AuthService {
   }
   public async create(user) {
     this.logger.log(`Creating new user [${user.username}]`);
+
     const pass = await this.hashPassword(user.password);
     const newUser = await this.userService.create({ ...user, password: pass });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...result } = newUser['dataValues'];
     const tokens = await this.generateTokens({
       id: result.id,

@@ -13,7 +13,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Delete()
   async deleteYourself(@Request() req) {
-    await this.usersService.deleteYourSelf(req.user.id);
+    await this.usersService.deleteUser(req.user.id);
     return {
       message: 'User successfully deleted',
     };

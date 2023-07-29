@@ -21,9 +21,11 @@ export class UsersService {
     });
     return newUser;
   }
-  async deleteYourSelf(userId: number): Promise<void> {
-    const dbUser = await this.userRepository.findByPk(userId);
-    await dbUser.destroy();
+  async deleteUser(userId: number, force = false): Promise<void> {
+    const dbUser = await this.userRepository.findByPk(userId, {
+      paranoid: !force,
+    });
+    await dbUser.destroy({ force });
   }
   async findOneByEmail(email: string): Promise<User> {
     return await this.userRepository.findOne<User>({ where: { email } });

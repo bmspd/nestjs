@@ -9,22 +9,33 @@ import {
   HasOneGetAssociationMixin,
   HasOneCreateAssociationMixin,
 } from 'sequelize';
-import { Column, DataType, HasOne, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  HasOne,
+  Model,
+  Table,
+  DeletedAt,
+} from 'sequelize-typescript';
 import { Project } from './project.entity';
 import { Profile } from './profile.entity';
 
 @Table
 export class User extends Model<User> {
+  @DeletedAt
+  deletedAt: Date;
+
+  // username and email not unique to let duplicates if one was soft-deleted before
   @Column({
     type: DataType.STRING,
+    unique: false,
     allowNull: true,
-    unique: 'username',
   })
   username: string;
 
   @Column({
     type: DataType.STRING,
-    unique: 'email',
+    unique: false,
     allowNull: false,
   })
   email: string;
