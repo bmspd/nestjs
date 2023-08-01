@@ -5,15 +5,11 @@ import {
   ForeignKey,
   Model,
   Table,
-  DeletedAt,
 } from 'sequelize-typescript';
 import { User } from './user.entity';
 
 @Table
 export class Profile extends Model<Profile> {
-  @DeletedAt
-  deletedAt: Date;
-
   @ForeignKey(() => User)
   user_id: number;
   @Column({

@@ -8,6 +8,7 @@ import {
   BelongsToManyCreateAssociationMixin,
   HasOneGetAssociationMixin,
   HasOneCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
 } from 'sequelize';
 import {
   Column,
@@ -19,6 +20,7 @@ import {
 } from 'sequelize-typescript';
 import { Project } from './project.entity';
 import { Profile } from './profile.entity';
+import { Task } from './task.entity';
 
 @Table
 export class User extends Model<User> {
@@ -62,4 +64,8 @@ export class User extends Model<User> {
   declare hasProjects: BelongsToManyHasAssociationMixin<Project, number>;
   declare countProjects: BelongsToManyCountAssociationsMixin;
   declare createProject: BelongsToManyCreateAssociationMixin<Project>;
+
+  declare getExecutingTasks: HasManyGetAssociationsMixin<Task>;
+
+  declare getCreatedTasks: HasManyGetAssociationsMixin<Task>;
 }

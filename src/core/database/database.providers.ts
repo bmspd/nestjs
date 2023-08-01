@@ -5,6 +5,7 @@ import { User } from '../entities/user.entity';
 import { Profile } from '../entities/profile.entity';
 import { Project } from 'src/core/entities/project.entity';
 import { UserProject } from 'src/core/entities/userProject.entity';
+import { Task } from '../entities/task.entity';
 
 export const databaseProviders = [
   {
@@ -25,7 +26,7 @@ export const databaseProviders = [
           config = databaseConfig.development;
       }
       const sequelize = new Sequelize(config);
-      sequelize.addModels([User, Profile, Project, UserProject]);
+      sequelize.addModels([User, Profile, Project, UserProject, Task]);
       User.hasOne(Profile, { foreignKey: 'user_id', onDelete: 'CASCADE' });
       Profile.belongsTo(User, { foreignKey: 'user_id' });
       User.belongsToMany(Project, {
@@ -38,7 +39,13 @@ export const databaseProviders = [
         foreignKey: 'project_id',
         otherKey: 'user_id',
       });
-      const needAlter = true;
+      Project.hasMany(Task, { foreignKey: 'project_id' });
+      Task.belongsTo(Project, { foreignKey: 'project_id' });
+      User.hasMany(Task, { foreignKey: 'executor_id', as: 'executingTasks' });
+      Task.belongsTo(User, { foreignKey: 'executor_id', as: 'executor' });
+      User.hasMany(Task, { foreignKey: 'executor_id', as: 'createdTasks' });
+      Task.belongsTo(User, { foreignKey: 'creator_id', as: 'creator' });
+      const needAlter = false;
       await sequelize.sync({ alter: needAlter });
       return sequelize;
     },

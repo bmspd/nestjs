@@ -15,7 +15,7 @@ import { TrimTransformInterceptor } from 'src/core/interceptors/trim.interceptor
 import { CreateProjectDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
 
-@Controller('projects')
+@Controller()
 export class ProjectsController {
   constructor(private projectService: ProjectsService) {}
 

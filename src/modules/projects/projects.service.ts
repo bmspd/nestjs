@@ -49,6 +49,9 @@ export class ProjectsService {
     const dbUser = await this.userRepository.findByPk(user.id);
     return await dbUser.getProjects({ joinTableAttributes: [] });
   }
+  async getProjectById(projectId: number) {
+    return await this.projectRepository.findByPk(projectId);
+  }
 
   async getAllProject(): Promise<Project[]> {
     return await this.projectRepository.findAll();

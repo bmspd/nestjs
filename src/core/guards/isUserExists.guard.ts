@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { UsersService } from '../../modules/users/users.service';
 import { Observable } from 'rxjs';
 import { CustomForbiddenException } from '../exceptions/CustomForbiddenException';

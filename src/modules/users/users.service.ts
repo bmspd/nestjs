@@ -4,6 +4,7 @@ import { User } from '../../core/entities/user.entity';
 import { Op } from 'sequelize';
 import { Profile } from '../../core/entities/profile.entity';
 import { CreateUserDto } from './dto/createUser.dto';
+import { CustomNotFoundException } from 'src/core/exceptions/CustomNotFoundException';
 
 @Injectable()
 export class UsersService {
@@ -57,5 +58,11 @@ export class UsersService {
 
   async countAll(): Promise<number> {
     return await this.userRepository.count();
+  }
+
+  async isUserInProject(userId: number, projectId: number): Promise<boolean> {
+    const user = await this.findOneById(userId);
+    if (!user) throw new CustomNotFoundException({ user: 'User not found' });
+    return user.hasProject(projectId);
   }
 }

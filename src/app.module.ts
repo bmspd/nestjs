@@ -12,6 +12,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { ProfileModule } from './modules/users/profile/profile.module';
 import { RouterModule } from '@nestjs/core';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -40,8 +41,19 @@ import { ProjectsModule } from './modules/projects/projects.module';
           },
         ],
       },
+      {
+        path: 'projects',
+        module: ProjectsModule,
+        children: [
+          {
+            path: ':projectId/tasks',
+            module: TasksModule,
+          },
+        ],
+      },
     ]),
     ProjectsModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService, UsersService],
