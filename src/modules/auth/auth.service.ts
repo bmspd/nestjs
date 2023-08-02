@@ -18,6 +18,8 @@ export class AuthService {
       usernameOrEmail,
     );
     if (!user) return null;
+    // TODO: maybe some custom error if no password was set
+    if (!user.password) return null;
     const match = await this.comparePasswords(pass, user.password);
     if (!match) return null;
 
@@ -93,12 +95,12 @@ export class AuthService {
     return { ...tokens };
   }
 
-  private async hashPassword(password) {
+  public async hashPassword(password) {
     const hash = await bcrypt.hash(password, 10);
     return hash;
   }
 
-  private async comparePasswords(enteredPassword, dbPassword) {
+  public async comparePasswords(enteredPassword, dbPassword) {
     const match = await bcrypt.compare(enteredPassword, dbPassword);
     return match;
   }

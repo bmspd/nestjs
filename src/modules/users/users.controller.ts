@@ -10,7 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { ProfileService } from './profile/profile.service';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateUserPassDto } from './dto/user.dto';
+import { CreateUserPassDto, UpdateUserPassDto } from './dto/user.dto';
 
 @Controller()
 export class UsersController {
@@ -31,15 +31,16 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Post('password')
   async createPassword(@Request() req, @Body() body: CreateUserPassDto) {
-    console.log(body);
-    console.log(req.user);
-    return this.usersService.createPassword(req.user.id);
+    return this.usersService.createPassword(req.user.id, body.password);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('password')
-  async updatePassword(@Request() req) {
-    console.log(req);
-    return 'bye';
+  async changePassword(@Request() req, @Body() body: UpdateUserPassDto) {
+    return this.usersService.changePassword(
+      req.user.id,
+      body.password,
+      body.new_password,
+    );
   }
 }

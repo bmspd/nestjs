@@ -6,6 +6,7 @@ import { Profile } from '../../core/entities/profile.entity';
 import { CreateUserDto } from './dto/createUser.dto';
 import { CustomNotFoundException } from 'src/core/exceptions/CustomNotFoundException';
 import { AuthService } from '../auth/auth.service';
+import { CustomBadRequestExceptions } from 'src/core/exceptions/CustomBadRequestExceptions';
 
 @Injectable()
 export class UsersService {
@@ -68,10 +69,33 @@ export class UsersService {
     return user.hasProject(projectId);
   }
 
-  async createPassword(userId: number) {
-    console.log(userId);
+  async createPassword(userId: number, password: string) {
+    const user = await this.userRepository.findByPk(userId);
+    if (!user) throw new CustomNotFoundException({ user: 'User not found' });
+    const hashedPassword = await this.authService.hashPassword(password);
+    await user.update({ password: hashedPassword });
     return {
-      message: 'hello',
+      message: 'Password was successfully created',
+    };
+  }
+  async changePassword(
+    userId: number,
+    oldPassword: string,
+    newPassword: string,
+  ) {
+    const user = await this.userRepository.findByPk(userId);
+    if (!user) throw new CustomNotFoundException({ user: 'User not found' });
+    const matchPass = await this.authService.comparePasswords(
+      oldPassword,
+      user.password,
+    );
+    if (!matchPass) {
+      throw new CustomBadRequestExceptions({ password: 'Wrong password' });
+    }
+    const hashedPassword = await this.authService.hashPassword(newPassword);
+    await user.update({ password: hashedPassword });
+    return {
+      message: 'Password was successfully changed',
     };
   }
 }

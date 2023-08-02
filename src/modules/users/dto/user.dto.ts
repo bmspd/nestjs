@@ -29,3 +29,9 @@ export class UserDto {
 }
 
 export class CreateUserPassDto extends PickType(UserDto, ['password']) {}
+export class UpdateUserPassDto extends CreateUserPassDto {
+  @IsNotEmpty()
+  @MinLength(MINIMUM_PASSWORD_LENGTH)
+  @MaxLength(DEFAULT_MAXIMUM_CHAR_LENGTH)
+  readonly new_password: string;
+}
