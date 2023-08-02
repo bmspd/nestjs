@@ -24,11 +24,13 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('login')
   async loginByToken(@Request() req) {
+    console.log('loginByToken');
     return await this.authService.loginByToken(req.user);
   }
   @UseGuards()
   @Post('login/google')
   async loginByGoogle(@Body(SignupPipe) credentials) {
+    console.log('loginByGoogle');
     return await this.authService.loginByGoogle(credentials);
   }
   @UseGuards(IsUserExists)

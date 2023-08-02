@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(forwardRef(() => UsersService))
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
@@ -31,6 +32,7 @@ export class AuthService {
     this.logger.log(
       `User [${user.username}]#${user.id} successfully logged in`,
     );
+    this.excludePassword(user);
     return { user, ...tokens };
   }
 
@@ -38,32 +40,37 @@ export class AuthService {
     const userData = await this.userService.findOneByEmailOrUsername(
       user.email ?? user.username,
     );
-    return userData;
+    const values = userData['dataValues'];
+    this.excludePassword(values);
+    return values;
   }
   public async loginByGoogle(user) {
     const userData = await this.userService.findOneByEmail(user.email);
     if (userData) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { id, username, password, ...rest } = userData['dataValues'];
+      const { id, username, ...rest } = userData['dataValues'];
+      this.excludePassword(rest);
       const tokens = await this.generateTokens({ id, username });
       return { id, username, ...rest, ...tokens };
     }
     // first_name и last_name могут оказаться меньше по длине!!!
-    return await this.create({ ...user, password: 'RANDOM PASSWORD' });
+    return await this.create({ ...user });
   }
   public async create(user) {
     this.logger.log(`Creating new user [${user.username}]`);
-
-    const pass = await this.hashPassword(user.password);
-    const newUser = await this.userService.create({ ...user, password: pass });
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = newUser['dataValues'];
+    let newUser;
+    if (!user.password) {
+      newUser = await this.userService.create({ ...user });
+    } else {
+      const pass = await this.hashPassword(user.password);
+      newUser = await this.userService.create({ ...user, password: pass });
+    }
+    const { ...result } = newUser['dataValues'];
     const tokens = await this.generateTokens({
       id: result.id,
       username: result.username,
     });
-
+    this.excludePassword(result);
     return { user: result, ...tokens };
   }
 
@@ -94,5 +101,9 @@ export class AuthService {
   private async comparePasswords(enteredPassword, dbPassword) {
     const match = await bcrypt.compare(enteredPassword, dbPassword);
     return match;
+  }
+
+  private excludePassword(user) {
+    if (user.password) delete user['password'];
   }
 }

@@ -1,3 +1,4 @@
+import { PickType } from '@nestjs/mapped-types';
 import {
   IsEmail,
   IsNotEmpty,
@@ -26,3 +27,5 @@ export class UserDto {
   @MaxLength(DEFAULT_MAXIMUM_CHAR_LENGTH)
   readonly password: string;
 }
+
+export class CreateUserPassDto extends PickType(UserDto, ['password']) {}

@@ -1,10 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { PROFILE_REPOSITORY, USER_REPOSITORY } from '../../core/constants';
 import { User } from '../../core/entities/user.entity';
 import { Op } from 'sequelize';
 import { Profile } from '../../core/entities/profile.entity';
 import { CreateUserDto } from './dto/createUser.dto';
 import { CustomNotFoundException } from 'src/core/exceptions/CustomNotFoundException';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UsersService {
@@ -12,8 +13,9 @@ export class UsersService {
     @Inject(USER_REPOSITORY) private readonly userRepository: typeof User,
     @Inject(PROFILE_REPOSITORY)
     private readonly profileRepository: typeof Profile,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
   ) {}
-
   async create(user: CreateUserDto): Promise<User> {
     const newUser = await this.userRepository.create<User>(user);
     await this.profileRepository.create<Profile>({
@@ -64,5 +66,12 @@ export class UsersService {
     const user = await this.findOneById(userId);
     if (!user) throw new CustomNotFoundException({ user: 'User not found' });
     return user.hasProject(projectId);
+  }
+
+  async createPassword(userId: number) {
+    console.log(userId);
+    return {
+      message: 'hello',
+    };
   }
 }

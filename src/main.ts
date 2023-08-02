@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { exceptionFactory } from './core/exceptions/utils';
-
 export let app: INestApplication;
 
 async function bootstrap() {
