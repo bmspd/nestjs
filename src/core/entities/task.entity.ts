@@ -36,7 +36,7 @@ export class Task extends Model<Task> {
     type: DataType.TEXT,
     allowNull: true,
   })
-  desciption: string;
+  description: string;
 
   @Column({
     type: DataType.ENUM,

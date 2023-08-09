@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PROJECT_REPOSITORY, TASK_REPOSITORY } from 'src/core/constants';
 import { Project } from 'src/core/entities/project.entity';
 import { Task } from 'src/core/entities/task.entity';
+import { User } from 'src/core/entities/user.entity';
 import { ProjectsService } from '../projects/projects.service';
 import { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
 
@@ -16,7 +17,14 @@ export class TasksService {
 
   async getAllTasks(projectId: number) {
     const currentProject = await this.projectService.getProjectById(projectId);
-    return await currentProject.getTasks();
+    return await currentProject.getTasks({
+      include: [
+        { model: User, as: 'creator', attributes: ['id', 'username'] },
+        { model: User, as: 'executor', attributes: ['id', 'username'] },
+        { model: Project, as: 'project', attributes: ['name', 'id'] },
+      ],
+      attributes: { exclude: ['project_id', 'executor_id', 'creator_id'] },
+    });
   }
 
   async createTask(projectId: number, userId: number, task: CreateTaskDto) {
@@ -33,7 +41,12 @@ export class TasksService {
   }
 
   async getTaskById(taskId: number) {
-    return await this.taskRepository.findByPk(taskId);
+    return await this.taskRepository.findByPk(taskId, {
+      include: [
+        { model: User, as: 'creator', attributes: ['id', 'username'] },
+        { model: User, as: 'executor', attributes: ['id', 'username'] },
+      ],
+    });
   }
   async deleteTask(taskId: number) {
     const deletingTask = await this.getTaskById(taskId);

@@ -39,8 +39,8 @@ export const databaseProviders = [
         foreignKey: 'project_id',
         otherKey: 'user_id',
       });
-      Project.hasMany(Task, { foreignKey: 'project_id' });
-      Task.belongsTo(Project, { foreignKey: 'project_id' });
+      Project.hasMany(Task, { foreignKey: 'project_id', as: 'tasks' });
+      Task.belongsTo(Project, { foreignKey: 'project_id', as: 'project' });
       User.hasMany(Task, { foreignKey: 'executor_id', as: 'executingTasks' });
       Task.belongsTo(User, { foreignKey: 'executor_id', as: 'executor' });
       User.hasMany(Task, { foreignKey: 'executor_id', as: 'createdTasks' });
