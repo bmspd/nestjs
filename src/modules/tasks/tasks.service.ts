@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PROJECT_REPOSITORY, TASK_REPOSITORY } from 'src/core/constants';
+import { TSeqPagination } from 'src/core/decorators/param/pagination.decorator';
+import { AddPagination } from 'src/core/decorators/services/pagination-append.decorator';
 import { Project } from 'src/core/entities/project.entity';
 import { Task } from 'src/core/entities/task.entity';
 import { User } from 'src/core/entities/user.entity';
@@ -15,8 +17,18 @@ export class TasksService {
     @Inject(ProjectsService) private readonly projectService: ProjectsService,
   ) {}
 
-  async getAllTasks(projectId: number) {
+  @AddPagination
+  async getAllTasks({
+    projectId,
+    pagination,
+  }: {
+    projectId: number;
+    pagination: TSeqPagination;
+  }) {
     const currentProject = await this.projectService.getProjectById(projectId);
+    // TODO: need to reorganize this, to avoid assigning params to pagination arg
+    const total = await currentProject.countTasks();
+    pagination.total = total;
     return await currentProject.getTasks({
       include: [
         { model: User, as: 'creator', attributes: ['id', 'username'] },
@@ -24,6 +36,7 @@ export class TasksService {
         { model: Project, as: 'project', attributes: ['name', 'id'] },
       ],
       attributes: { exclude: ['project_id', 'executor_id', 'creator_id'] },
+      ...pagination,
     });
   }
 

@@ -11,6 +11,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import {
+  Pagination,
+  TSeqPagination,
+} from 'src/core/decorators/param/pagination.decorator';
 import { IsProjectExists } from 'src/core/guards/IsProjectExists.guard';
 import { IsTaskExists } from 'src/core/guards/IsTaskExists.guard';
 import { IsUserInProject } from 'src/core/guards/isUserInProject.guard';
@@ -22,8 +26,11 @@ import { TasksService } from './tasks.service';
 export class TasksController {
   constructor(private tasksService: TasksService) {}
   @Get()
-  async getAllTasks(@Param('projectId', ParseIntPipe) projectId: number) {
-    return await this.tasksService.getAllTasks(projectId);
+  async getAllTasks(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Pagination() pagination: TSeqPagination,
+  ) {
+    return await this.tasksService.getAllTasks({ projectId, pagination });
   }
   @Post()
   async createTask(

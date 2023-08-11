@@ -1,6 +1,7 @@
 import {
   HasManyCreateAssociationMixin,
   HasManyGetAssociationsMixin,
+  HasManyCountAssociationsMixin,
 } from 'sequelize';
 import { Column, DataType, Model, Table } from 'sequelize-typescript';
 import { Task } from './task.entity';
@@ -15,4 +16,5 @@ export class Project extends Model<Project> {
 
   declare createTask: HasManyCreateAssociationMixin<Task>;
   declare getTasks: HasManyGetAssociationsMixin<Task>;
+  declare countTasks: HasManyCountAssociationsMixin;
 }
