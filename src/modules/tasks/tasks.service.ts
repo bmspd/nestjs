@@ -35,6 +35,7 @@ export class TasksService {
         { model: User, as: 'executor', attributes: ['id', 'username'] },
         { model: Project, as: 'project', attributes: ['name', 'id'] },
       ],
+      order: [['createdAt', 'DESC']],
       attributes: { exclude: ['project_id', 'executor_id', 'creator_id'] },
       ...pagination,
     });

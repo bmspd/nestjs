@@ -13,7 +13,7 @@ export function AddPagination(
       const last_page = Math.ceil(total / per_page);
       return {
         data: result,
-        meta: { pagintaion: { page, per_page, total, last_page } },
+        meta: { pagination: { page, per_page, total, last_page } },
       };
     };
   }

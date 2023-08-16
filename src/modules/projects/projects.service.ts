@@ -4,6 +4,8 @@ import { CustomBadRequestExceptions } from 'src/core/exceptions/CustomBadRequest
 import { User } from '../../core/entities/user.entity';
 import { CreateProjectDto } from './dto/project.dto';
 import { Project } from '../../core/entities/project.entity';
+import { AddPagination } from 'src/core/decorators/services/pagination-append.decorator';
+import { TSeqPagination } from 'src/core/decorators/param/pagination.decorator';
 
 @Injectable()
 export class ProjectsService {
@@ -20,6 +22,24 @@ export class ProjectsService {
     const dbUser = await this.userRepository.findByPk(user.id);
     const newProject = await dbUser.createProject(project);
     return newProject;
+  }
+
+  @AddPagination
+  async getUsersInProject({
+    projectId,
+    pagination,
+  }: {
+    projectId: number;
+    pagination: TSeqPagination;
+  }) {
+    const currentProject = await this.projectRepository.findByPk(projectId);
+    const total = await currentProject.countUsers();
+    pagination.total = total;
+    return currentProject.getUsers({
+      joinTableAttributes: [],
+      attributes: ['id', 'email', 'username'],
+      ...pagination,
+    });
   }
 
   async removeProject(projectId: number, user: { id: string }): Promise<void> {

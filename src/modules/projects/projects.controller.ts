@@ -11,6 +11,12 @@ import {
   Get,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import {
+  Pagination,
+  TSeqPagination,
+} from 'src/core/decorators/param/pagination.decorator';
+import { IsProjectExists } from 'src/core/guards/IsProjectExists.guard';
+import { IsUserInProject } from 'src/core/guards/isUserInProject.guard';
 import { TrimTransformInterceptor } from 'src/core/interceptors/trim.interceptor';
 import { CreateProjectDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
@@ -29,6 +35,18 @@ export class ProjectsController {
   @Get('/personal')
   async getPersonalProjects(@Request() req) {
     return await this.projectService.getPersonalProjects(req.user);
+  }
+
+  @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
+  @Get(':projectId/users')
+  async getUsersInProject(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Pagination() pagination: TSeqPagination,
+  ) {
+    return await this.projectService.getUsersInProject({
+      projectId,
+      pagination,
+    });
   }
 
   @UseGuards(AuthGuard('jwt'))
