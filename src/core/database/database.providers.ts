@@ -6,7 +6,8 @@ import { Profile } from '../entities/profile.entity';
 import { Project } from 'src/core/entities/project.entity';
 import { UserProject } from 'src/core/entities/userProject.entity';
 import { Task } from '../entities/task.entity';
-
+import { Image } from '../entities/image.entity';
+import { ImageTask } from '../entities/imageTask';
 export const databaseProviders = [
   {
     provide: SEQUELIZE,
@@ -26,7 +27,15 @@ export const databaseProviders = [
           config = databaseConfig.development;
       }
       const sequelize = new Sequelize(config);
-      sequelize.addModels([User, Profile, Project, UserProject, Task]);
+      sequelize.addModels([
+        User,
+        Profile,
+        Project,
+        UserProject,
+        Task,
+        Image,
+        ImageTask,
+      ]);
       User.hasOne(Profile, { foreignKey: 'user_id', onDelete: 'CASCADE' });
       Profile.belongsTo(User, { foreignKey: 'user_id' });
       User.belongsToMany(Project, {
@@ -45,6 +54,18 @@ export const databaseProviders = [
       Task.belongsTo(User, { foreignKey: 'executor_id', as: 'executor' });
       User.hasMany(Task, { foreignKey: 'executor_id', as: 'createdTasks' });
       Task.belongsTo(User, { foreignKey: 'creator_id', as: 'creator' });
+      Image.belongsToMany(Task, {
+        through: ImageTask,
+        foreignKey: 'image_id',
+        otherKey: 'task_id',
+      });
+      Task.belongsToMany(Image, {
+        through: ImageTask,
+        foreignKey: 'task_id',
+        otherKey: 'image_id',
+      });
+      Image.hasOne(Project, { foreignKey: 'logo_id', as: 'logoProject' });
+      Project.belongsTo(Image, { foreignKey: 'logo_id', as: 'logo' });
       const needAlter = false;
       await sequelize.sync({ alter: needAlter });
       return sequelize;

@@ -8,22 +8,34 @@ import {
   Request,
   UseGuards,
   UseInterceptors,
+  UploadedFile,
   Get,
+  Res,
+  ParseFilePipe,
+  HttpStatus,
+  StreamableFile,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express, Response } from 'express';
 import {
   Pagination,
   TSeqPagination,
 } from 'src/core/decorators/param/pagination.decorator';
+import { CustomBadRequestExceptions } from 'src/core/exceptions/CustomBadRequestExceptions';
 import { IsProjectExists } from 'src/core/guards/IsProjectExists.guard';
 import { IsUserInProject } from 'src/core/guards/isUserInProject.guard';
 import { TrimTransformInterceptor } from 'src/core/interceptors/trim.interceptor';
 import { CreateProjectDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
+import { UploadService } from '../upload/upload.service';
 
 @Controller()
 export class ProjectsController {
-  constructor(private projectService: ProjectsService) {}
+  constructor(
+    private projectService: ProjectsService,
+    private uploadService: UploadService,
+  ) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/all')
@@ -49,11 +61,41 @@ export class ProjectsController {
     });
   }
 
+  // TODO: limit on image size
+  @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
+  @Get(':projectId/logo')
+  async getProjectLogo(
+    @Res({ passthrough: true }) res: Response,
+    @Param('projectId', ParseIntPipe) projectId: number,
+  ) {
+    const file = await this.projectService.getLogo(projectId);
+    if (!file) {
+      res.status(HttpStatus.NO_CONTENT);
+      return;
+    }
+    res.set({
+      'Content-Type': file.mimetype,
+    });
+    return new StreamableFile(file.file);
+  }
+
   @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(new TrimTransformInterceptor())
+  @UseInterceptors(new TrimTransformInterceptor(), FileInterceptor('image'))
   @Post()
-  async createProject(@Request() req, @Body() project: CreateProjectDto) {
-    return await this.projectService.create(project, req.user);
+  async createProject(
+    @Request() req,
+    @Body() project: CreateProjectDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+        exceptionFactory: (error) => {
+          return new CustomBadRequestExceptions({ image: error });
+        },
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return await this.projectService.create(project, req.user, file);
   }
 
   @UseGuards(AuthGuard('jwt'))

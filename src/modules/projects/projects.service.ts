@@ -6,24 +6,48 @@ import { CreateProjectDto } from './dto/project.dto';
 import { Project } from '../../core/entities/project.entity';
 import { AddPagination } from 'src/core/decorators/services/pagination-append.decorator';
 import { TSeqPagination } from 'src/core/decorators/param/pagination.decorator';
-
+import { UploadService } from '../upload/upload.service';
+import { Image } from '../../core/entities/image.entity';
+import { ReadStream } from 'fs';
 @Injectable()
 export class ProjectsService {
   constructor(
     @Inject(PROJECT_REPOSITORY)
     private readonly projectRepository: typeof Project,
     @Inject(USER_REPOSITORY) private readonly userRepository: typeof User,
+    @Inject(UploadService) private readonly uploadService: UploadService,
   ) {}
 
   async create(
     project: CreateProjectDto,
     user: { id: string },
+    file?: Express.Multer.File,
   ): Promise<Project> {
     const dbUser = await this.userRepository.findByPk(user.id);
     const newProject = await dbUser.createProject(project);
+    if (file) {
+      const path = await this.uploadService.saveImageToSystem(
+        file,
+        'uploads/projects',
+      );
+      await newProject.createLogo({
+        original_name: file.originalname,
+        mimetype: file.mimetype,
+        path,
+      });
+    }
     return newProject;
   }
-
+  async getLogo(
+    projectId: number,
+  ): Promise<{ file: ReadStream; mimetype: string } | null> {
+    const project = await this.getProjectById(projectId);
+    const logo = await project.getLogo();
+    if (!logo) return null;
+    const file = this.uploadService.getImage(logo.path);
+    console.log(file);
+    return { file, mimetype: logo.mimetype };
+  }
   @AddPagination
   async getUsersInProject({
     projectId,
@@ -41,7 +65,6 @@ export class ProjectsService {
       ...pagination,
     });
   }
-
   async removeProject(projectId: number, user: { id: string }): Promise<void> {
     const dbUser = await this.userRepository.findByPk(user.id);
     const isProjectExsist = await dbUser.hasProject(projectId);
@@ -67,7 +90,11 @@ export class ProjectsService {
 
   async getPersonalProjects(user: { id: string }): Promise<Project[]> {
     const dbUser = await this.userRepository.findByPk(user.id);
-    return await dbUser.getProjects({ joinTableAttributes: [] });
+    return await dbUser.getProjects({
+      include: [{ model: Image, as: 'logo' }],
+      joinTableAttributes: [],
+      attributes: { exclude: ['logo_id'] },
+    });
   }
   async getProjectById(projectId: number) {
     return await this.projectRepository.findByPk(projectId);
