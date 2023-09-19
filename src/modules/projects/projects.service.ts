@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PROJECT_REPOSITORY, USER_REPOSITORY } from 'src/core/constants';
 import { CustomBadRequestExceptions } from 'src/core/exceptions/CustomBadRequestExceptions';
 import { User } from '../../core/entities/user.entity';
-import { CreateProjectDto } from './dto/project.dto';
+import { CreateProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { Project } from '../../core/entities/project.entity';
 import { AddPagination } from 'src/core/decorators/services/pagination-append.decorator';
 import { TSeqPagination } from 'src/core/decorators/param/pagination.decorator';
@@ -37,6 +37,29 @@ export class ProjectsService {
       });
     }
     return newProject;
+  }
+  async updateProjectInfo(projectId: number, projectInfo: UpdateProjectDto) {
+    const project = await this.getProjectById(projectId);
+    await project.update(projectInfo);
+  }
+  async updateLogo(projectId: number, logo?: Express.Multer.File) {
+    const project = await this.getProjectById(projectId);
+    const oldLogo = await project.getLogo();
+    if (logo) {
+      const path = await this.uploadService.saveImageToSystem(
+        logo,
+        'uploads/projects',
+      );
+      await project.createLogo({
+        original_name: logo.originalname,
+        mimetype: logo.mimetype,
+        path,
+      });
+    }
+    if (oldLogo) {
+      await this.uploadService.deleteFileFromSystem(oldLogo.path);
+      await oldLogo.destroy();
+    }
   }
   async getLogo(
     projectId: number,

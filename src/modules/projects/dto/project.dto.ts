@@ -1,6 +1,6 @@
 import { IsInt, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 import { DEFAULT_MAXIMUM_CHAR_LENGTH } from 'src/core/constants/validation';
-import { OmitType } from '@nestjs/mapped-types';
+import { OmitType, PartialType } from '@nestjs/mapped-types';
 
 export class ProjectDto {
   @IsInt()
@@ -15,3 +15,7 @@ export class ProjectDto {
 export class CreateProjectDto extends OmitType(ProjectDto, ['id']) {}
 
 export class RemoveProjectDto extends OmitType(ProjectDto, ['name']) {}
+
+export class UpdateProjectDto extends PartialType(
+  OmitType(ProjectDto, ['id']),
+) {}

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { createReadStream, ReadStream } from 'fs';
-import { writeFile } from 'fs/promises';
+import { unlink, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,5 +17,9 @@ export class UploadService {
     const fullPath = join(process.cwd(), path);
     const file = createReadStream(fullPath);
     return file;
+  }
+  async deleteFileFromSystem(path: string) {
+    const fullPath = join(process.cwd(), path);
+    await unlink(fullPath);
   }
 }

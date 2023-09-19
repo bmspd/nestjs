@@ -5,6 +5,7 @@ import {
   BelongsToManyGetAssociationsMixin,
   BelongsToManyCountAssociationsMixin,
   BelongsToCreateAssociationMixin,
+  BelongsToSetAssociationMixin,
 } from 'sequelize';
 import {
   Column,
@@ -35,4 +36,5 @@ export class Project extends Model<Project> {
   declare countUsers: BelongsToManyCountAssociationsMixin;
   declare createLogo: BelongsToCreateAssociationMixin<Image>;
   declare getLogo: BelongsToCreateAssociationMixin<Image>;
+  declare setLogo: BelongsToSetAssociationMixin<Image, number>;
 }

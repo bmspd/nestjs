@@ -14,6 +14,7 @@ import {
   ParseFilePipe,
   HttpStatus,
   StreamableFile,
+  Patch,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -26,7 +27,7 @@ import { CustomBadRequestExceptions } from 'src/core/exceptions/CustomBadRequest
 import { IsProjectExists } from 'src/core/guards/IsProjectExists.guard';
 import { IsUserInProject } from 'src/core/guards/isUserInProject.guard';
 import { TrimTransformInterceptor } from 'src/core/interceptors/trim.interceptor';
-import { CreateProjectDto } from './dto/project.dto';
+import { CreateProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
 import { UploadService } from '../upload/upload.service';
 
@@ -96,6 +97,40 @@ export class ProjectsController {
     file: Express.Multer.File,
   ) {
     return await this.projectService.create(project, req.user, file);
+  }
+
+  @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
+  @Post(':projectId/logo')
+  @UseInterceptors(FileInterceptor('logo'))
+  async uploadProjectLogo(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+        exceptionFactory: (error) => {
+          return new CustomBadRequestExceptions({ image: error });
+        },
+      }),
+    )
+    logo: Express.Multer.File,
+  ) {
+    await this.projectService.updateLogo(projectId, logo);
+    return {
+      message: 'Project logo was successfully updated',
+    };
+  }
+
+  @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
+  @Patch(':projectId')
+  @UseInterceptors(new TrimTransformInterceptor())
+  async updateProjectInfo(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Body() project: UpdateProjectDto,
+  ) {
+    await this.projectService.updateProjectInfo(projectId, project);
+    return {
+      message: 'Project was successfully updated',
+    };
   }
 
   @UseGuards(AuthGuard('jwt'))
