@@ -18,6 +18,10 @@ import {
 import { Task } from './task.entity';
 import { User } from './user.entity';
 import { Image } from './image.entity';
+import {
+  PROJECT_PATTERN_COLORS,
+  PROJECT_PATTERN_TYPES,
+} from '../constants/project';
 
 @Table
 export class Project extends Model<Project> {
@@ -29,6 +33,20 @@ export class Project extends Model<Project> {
 
   @ForeignKey(() => Image)
   logo_id: number;
+
+  @Column({
+    type: DataType.ENUM,
+    allowNull: true,
+    values: [...Object.values(PROJECT_PATTERN_TYPES)],
+  })
+  pattern_type: PROJECT_PATTERN_TYPES;
+
+  @Column({
+    type: DataType.ENUM,
+    allowNull: true,
+    values: [...Object.values(PROJECT_PATTERN_COLORS)],
+  })
+  pattern_color: PROJECT_PATTERN_COLORS;
 
   declare createTask: HasManyCreateAssociationMixin<Task>;
   declare getTasks: HasManyGetAssociationsMixin<Task>;
