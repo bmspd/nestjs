@@ -35,3 +35,5 @@ export class UpdateUserPassDto extends CreateUserPassDto {
   @MaxLength(DEFAULT_MAXIMUM_CHAR_LENGTH)
   readonly new_password: string;
 }
+
+export class InviteUserToProjectDto extends PickType(UserDto, ['email']) {}

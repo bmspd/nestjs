@@ -68,7 +68,6 @@ export class ProjectsService {
     const logo = await project.getLogo();
     if (!logo) return null;
     const file = this.uploadService.getImage(logo.path);
-    console.log(file);
     return { file, mimetype: logo.mimetype };
   }
   @AddPagination
@@ -117,6 +116,7 @@ export class ProjectsService {
       include: [{ model: Image, as: 'logo' }],
       joinTableAttributes: [],
       attributes: { exclude: ['logo_id'] },
+      order: [['createdAt', 'DESC']],
     });
   }
   async getProjectById(projectId: number) {
@@ -125,5 +125,12 @@ export class ProjectsService {
 
   async getAllProject(): Promise<Project[]> {
     return await this.projectRepository.findAll();
+  }
+
+  async inviteUserToProject(projectId: number, email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user)
+      throw new CustomBadRequestExceptions({ email: 'User not found' });
+    await user.addProject(projectId);
   }
 }

@@ -30,6 +30,7 @@ import { TrimTransformInterceptor } from 'src/core/interceptors/trim.interceptor
 import { CreateProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
 import { UploadService } from '../upload/upload.service';
+import { InviteUserToProjectDto } from '../users/dto/user.dto';
 
 @Controller()
 export class ProjectsController {
@@ -63,7 +64,7 @@ export class ProjectsController {
   }
 
   // TODO: limit on image size
-  @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
+  // @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
   @Get(':projectId/logo')
   async getProjectLogo(
     @Res({ passthrough: true }) res: Response,
@@ -75,8 +76,9 @@ export class ProjectsController {
       return;
     }
     res.set({
-      'Content-Type': file.mimetype,
+      'Content-Type': `${file.mimetype};charset=UTF-8`,
     });
+    console.log(file);
     return new StreamableFile(file.file);
   }
 
@@ -145,6 +147,7 @@ export class ProjectsController {
     };
   }
 
+  // TODO: сделать удаление по правам каким-нибудь
   @UseGuards(AuthGuard('jwt'))
   @Delete(':projectId')
   async deleteProject(@Param('projectId', ParseIntPipe) projectId: number) {
@@ -163,6 +166,18 @@ export class ProjectsController {
     await this.projectService.addProject(projectId, req.user);
     return {
       message: 'Project was successfully added',
+    };
+  }
+
+  @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
+  @Patch(':projectId/invite')
+  async inviteUserToProject(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Body() body: InviteUserToProjectDto,
+  ) {
+    await this.projectService.inviteUserToProject(projectId, body.email);
+    return {
+      user: 'Successfully added user to project',
     };
   }
 }

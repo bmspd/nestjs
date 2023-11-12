@@ -30,7 +30,6 @@ export class AuthController {
   @UseGuards()
   @Post('login/google')
   async loginByGoogle(@Body(SignupPipe) credentials) {
-    console.log('loginByGoogle');
     return await this.authService.loginByGoogle(credentials);
   }
   @UseGuards(IsUserExists)

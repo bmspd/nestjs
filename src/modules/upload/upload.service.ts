@@ -15,6 +15,7 @@ export class UploadService {
   }
   getImage(path: string): ReadStream {
     const fullPath = join(process.cwd(), path);
+    //const imageUrl = Buffer.from(fullPath, 'base64').toString()
     const file = createReadStream(fullPath);
     return file;
   }
