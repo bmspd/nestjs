@@ -62,7 +62,11 @@ export class ProjectsController {
       pagination,
     });
   }
-
+  @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
+  @Get(':projectId')
+  async getProjectById(@Param('projectId', ParseIntPipe) projectId: number) {
+    return await this.projectService.getProjectInfo(projectId);
+  }
   // TODO: limit on image size
   // @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
   @Get(':projectId/logo')

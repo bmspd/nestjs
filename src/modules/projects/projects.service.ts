@@ -9,6 +9,7 @@ import { TSeqPagination } from 'src/core/decorators/param/pagination.decorator';
 import { UploadService } from '../upload/upload.service';
 import { Image } from '../../core/entities/image.entity';
 import { ReadStream } from 'fs';
+import { FindAttributeOptions, Includeable } from 'sequelize';
 @Injectable()
 export class ProjectsService {
   constructor(
@@ -119,10 +120,28 @@ export class ProjectsService {
       order: [['createdAt', 'DESC']],
     });
   }
-  async getProjectById(projectId: number) {
-    return await this.projectRepository.findByPk(projectId);
+  // TODO закрыть это каким-то образом(includes, attributes, etc...)
+  async getProjectById(
+    projectId: number,
+    meta?: {
+      include?: Includeable | Includeable[];
+      atttribtutes?: FindAttributeOptions;
+    },
+  ) {
+    return await this.projectRepository.findByPk(projectId, {
+      include: meta?.include,
+      attributes: meta?.atttribtutes,
+    });
   }
-
+  async getProjectInfo(projectId: number) {
+    const project = await this.getProjectById(projectId, {
+      include: [{ model: Image, as: 'logo' }],
+      atttribtutes: { exclude: ['logo_id'] },
+    });
+    if (!project)
+      throw new CustomBadRequestExceptions({ project: 'Project not found' });
+    return project;
+  }
   async getAllProject(): Promise<Project[]> {
     return await this.projectRepository.findAll();
   }
