@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -12,6 +13,7 @@ import {
   PROJECT_PATTERN_COLORS,
   PROJECT_PATTERN_TYPES,
 } from 'src/core/constants/project';
+import { Transform } from 'class-transformer';
 
 export class ProjectDto {
   @IsInt()
@@ -37,4 +39,9 @@ export class RemoveProjectDto extends OmitType(ProjectDto, ['name']) {}
 
 export class UpdateProjectDto extends PartialType(
   OmitType(ProjectDto, ['id']),
-) {}
+) {
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === true || value === 'true')
+  readonly same_logo: boolean;
+}

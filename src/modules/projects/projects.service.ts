@@ -40,8 +40,11 @@ export class ProjectsService {
     return newProject;
   }
   async updateProjectInfo(projectId: number, projectInfo: UpdateProjectDto) {
-    const project = await this.getProjectById(projectId);
-    await project.update(projectInfo);
+    const project = await this.getProjectById(projectId, {
+      include: [{ model: Image, as: 'logo' }],
+      atttribtutes: { exclude: ['logo_id'] },
+    });
+    return await project.update(projectInfo);
   }
   async updateLogo(projectId: number, logo?: Express.Multer.File) {
     const project = await this.getProjectById(projectId);

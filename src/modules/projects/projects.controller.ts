@@ -128,15 +128,24 @@ export class ProjectsController {
 
   @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
   @Patch(':projectId')
+  @UseInterceptors(FileInterceptor('image'))
   @UseInterceptors(new TrimTransformInterceptor())
   async updateProjectInfo(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Body() project: UpdateProjectDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+        exceptionFactory: (error) => {
+          return new CustomBadRequestExceptions({ image: error });
+        },
+      }),
+    )
+    logo: Express.Multer.File,
   ) {
-    await this.projectService.updateProjectInfo(projectId, project);
-    return {
-      message: 'Project was successfully updated',
-    };
+    if (project.same_logo !== true)
+      await this.projectService.updateLogo(projectId, logo);
+    return await this.projectService.updateProjectInfo(projectId, project);
   }
 
   @UseGuards(AuthGuard('jwt'))
