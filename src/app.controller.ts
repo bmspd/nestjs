@@ -12,6 +12,10 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Get('/0')
+  geZero(): string {
+    return 'got zero!';
+  }
   @UseGuards(AuthGuard('jwt'))
   @Get('/1')
   getOne(): string {

@@ -1,5 +1,4 @@
 version: '3.5'
-
 networks:
   app-tier:
     driver: bridge
@@ -27,8 +26,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: taskee-backend
-    environment:
-      - PORT=${PORT}
+    expose:
+      - 4000  
     ports:
       - '4000:4000'
     depends_on:
@@ -50,5 +49,14 @@ services:
       - 8081:80
     networks:
       - app-tier  
+  frontend:
+    env_file: .env.front.docker
+    image: bmspd/taskee-frontend:latest  
+    build:
+      context: ./
+    networks:
+      - app-tier  
+    ports:
+     - 3030:3030  
 volumes:
   dbdata:  
