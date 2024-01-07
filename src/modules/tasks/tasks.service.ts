@@ -51,7 +51,10 @@ export class TasksService {
   }
   async updateTask(taskId: number, task: UpdateTaskDto) {
     const updatingTask = await this.getTaskById(taskId);
-    return await updatingTask.update(task);
+    await updatingTask.update(task);
+    // не обновлются связи, если просто update -> save делать
+    const updatedTask = await this.getTaskById(taskId);
+    return updatedTask;
   }
 
   async getTaskById(taskId: number) {
