@@ -163,8 +163,11 @@ export class ProjectsController {
   // TODO: сделать удаление по правам каким-нибудь
   @UseGuards(AuthGuard('jwt'))
   @Delete(':projectId')
-  async deleteProject(@Param('projectId', ParseIntPipe) projectId: number) {
-    await this.projectService.deleteProject(projectId);
+  async deleteProject(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Request() req,
+  ) {
+    await this.projectService.deleteProject(projectId, +req.user.id);
     return {
       message: 'Project was successfully deleted',
     };
@@ -191,6 +194,18 @@ export class ProjectsController {
     await this.projectService.inviteUserToProject(projectId, body.email);
     return {
       user: 'Successfully added user to project',
+    };
+  }
+
+  @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
+  @Get(':projectId/quit')
+  async quitProject(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Request() req,
+  ) {
+    await this.projectService.quitProject(projectId, +req.user.id);
+    return {
+      message: 'You left this project',
     };
   }
 }

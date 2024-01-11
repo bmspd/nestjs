@@ -7,6 +7,7 @@ import {
   BelongsToCreateAssociationMixin,
   BelongsToSetAssociationMixin,
   BelongsToManyAddAssociationMixin,
+  BelongsToManyRemoveAssociationMixin,
 } from 'sequelize';
 import {
   Column,
@@ -48,13 +49,20 @@ export class Project extends Model<Project> {
   })
   pattern_color: PROJECT_PATTERN_COLORS;
 
+  @ForeignKey(() => User)
+  creator_id: number;
+
   declare createTask: HasManyCreateAssociationMixin<Task>;
   declare getTasks: HasManyGetAssociationsMixin<Task>;
   declare countTasks: HasManyCountAssociationsMixin;
   declare getUsers: BelongsToManyGetAssociationsMixin<User>;
   declare addUser: BelongsToManyAddAssociationMixin<User, number>;
+  declare removeUser: BelongsToManyRemoveAssociationMixin<User, User['id']>;
   declare countUsers: BelongsToManyCountAssociationsMixin;
   declare createLogo: BelongsToCreateAssociationMixin<Image>;
   declare getLogo: BelongsToCreateAssociationMixin<Image>;
   declare setLogo: BelongsToSetAssociationMixin<Image, number>;
+  declare createCreator: BelongsToCreateAssociationMixin<User>;
+  declare getCreator: BelongsToCreateAssociationMixin<User>;
+  declare setCreator: BelongsToSetAssociationMixin<User, number>;
 }

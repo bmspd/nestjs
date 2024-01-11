@@ -66,6 +66,7 @@ export const databaseProviders = [
       });
       Image.hasOne(Project, { foreignKey: 'logo_id', as: 'logoProject' });
       Project.belongsTo(Image, { foreignKey: 'logo_id', as: 'logo' });
+      Project.belongsTo(User, { foreignKey: 'creator_id', as: 'creator' });
       const needAlter = false;
       await sequelize.sync({ alter: needAlter });
       return sequelize;

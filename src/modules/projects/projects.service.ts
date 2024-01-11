@@ -25,7 +25,10 @@ export class ProjectsService {
     file?: Express.Multer.File,
   ): Promise<Project> {
     const dbUser = await this.userRepository.findByPk(user.id);
-    const newProject = await dbUser.createProject(project);
+    const newProject = await dbUser.createProject({
+      ...project,
+      creator_id: +user.id,
+    });
     if (file) {
       const path = await this.uploadService.saveImageToSystem(
         file,
@@ -99,11 +102,25 @@ export class ProjectsService {
     await dbUser.removeProject(projectId);
   }
 
-  async deleteProject(project_id: number): Promise<void> {
+  async deleteProject(project_id: number, user_id: number): Promise<void> {
     const dbProject = await this.projectRepository.findByPk(project_id);
     if (!dbProject)
       throw new CustomBadRequestExceptions({ project: 'Project not found' });
+    if (dbProject.creator_id !== user_id)
+      throw new CustomBadRequestExceptions({
+        project: 'You are not an owner to delete this project!',
+      });
     await dbProject.destroy();
+  }
+
+  async quitProject(project_id: number, user_id: number): Promise<void> {
+    const dbProject = await this.projectRepository.findByPk(project_id);
+    if (dbProject.creator_id === user_id) {
+      throw new CustomBadRequestExceptions({
+        project: 'Owner can not quit from project',
+      });
+    }
+    await dbProject.removeUser(user_id);
   }
 
   async addProject(projectId: number, user: { id: string }): Promise<void> {
@@ -117,7 +134,14 @@ export class ProjectsService {
   async getPersonalProjects(user: { id: string }): Promise<Project[]> {
     const dbUser = await this.userRepository.findByPk(user.id);
     return await dbUser.getProjects({
-      include: [{ model: Image, as: 'logo' }],
+      include: [
+        { model: Image, as: 'logo' },
+        {
+          model: User,
+          as: 'creator',
+          attributes: ['id', 'username', 'email'],
+        },
+      ],
       joinTableAttributes: [],
       attributes: { exclude: ['logo_id'] },
       order: [['createdAt', 'DESC']],
@@ -138,7 +162,10 @@ export class ProjectsService {
   }
   async getProjectInfo(projectId: number) {
     const project = await this.getProjectById(projectId, {
-      include: [{ model: Image, as: 'logo' }],
+      include: [
+        { model: Image, as: 'logo' },
+        { model: User, as: 'creator', attributes: ['id', 'username', 'email'] },
+      ],
       atttribtutes: { exclude: ['logo_id'] },
     });
     if (!project)
