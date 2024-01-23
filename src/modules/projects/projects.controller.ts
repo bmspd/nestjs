@@ -31,6 +31,7 @@ import { CreateProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { ProjectsService } from './projects.service';
 import { UploadService } from '../upload/upload.service';
 import { InviteUserToProjectDto } from '../users/dto/user.dto';
+import { NullFormDataReaderInterceptor } from 'src/core/interceptors/nullFormData.interceptor';
 
 @Controller()
 export class ProjectsController {
@@ -82,7 +83,6 @@ export class ProjectsController {
     res.set({
       'Content-Type': `${file.mimetype};charset=UTF-8`,
     });
-    console.log(file);
     return new StreamableFile(file.file);
   }
 
@@ -128,8 +128,11 @@ export class ProjectsController {
 
   @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
   @Patch(':projectId')
-  @UseInterceptors(FileInterceptor('image'))
-  @UseInterceptors(new TrimTransformInterceptor())
+  @UseInterceptors(
+    FileInterceptor('image'),
+    new NullFormDataReaderInterceptor(),
+    new TrimTransformInterceptor(),
+  )
   async updateProjectInfo(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Body() project: UpdateProjectDto,
