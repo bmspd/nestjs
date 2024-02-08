@@ -5,6 +5,7 @@ import {
   Request,
   Body,
   Get,
+  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -15,6 +16,7 @@ import { CreateUserDto } from '../users/dto/createUser.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+  private readonly logger = new Logger(AuthController.name);
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Request() req) {
@@ -24,7 +26,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('login')
   async loginByToken(@Request() req) {
-    console.log('loginByToken');
+    this.logger.log(`#${req.user.id} logging by token`);
     return await this.authService.loginByToken(req.user);
   }
   @UseGuards()

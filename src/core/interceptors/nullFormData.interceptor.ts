@@ -18,14 +18,14 @@ export class NullFormDataReaderInterceptor<T>
   constructor(blackList?: string[]) {
     this.blackList = blackList;
   }
-  private nullTransorm(values) {
+  private nullTransform(values) {
     Object.keys(values).forEach((key) => {
       if (
         !this.blackList ||
         (this.blackList && !this.blackList.includes(key))
       ) {
         if (isObject(values[key])) {
-          values[key] = this.nullTransorm(values[key]);
+          values[key] = this.nullTransform(values[key]);
         } else {
           if (typeof values[key] === 'string' && values[key] === '') {
             values[key] = null;
@@ -41,7 +41,7 @@ export class NullFormDataReaderInterceptor<T>
   ): Observable<Response<T>> {
     // сделано так, потому что в multipart/formdata приходит null prototype object
     const body = Object.assign({}, context.switchToHttp().getRequest().body);
-    const trimmedBody = this.nullTransorm(body);
+    const trimmedBody = this.nullTransform(body);
     context.switchToHttp().getRequest().body = trimmedBody;
     console.log(trimmedBody);
     return next.handle();

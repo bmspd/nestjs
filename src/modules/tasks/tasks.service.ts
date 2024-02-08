@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { Op, WhereOptions } from 'sequelize';
 import { PROJECT_REPOSITORY, TASK_REPOSITORY } from 'src/core/constants';
 import { TSeqPagination } from 'src/core/decorators/param/pagination.decorator';
 import { AddPagination } from 'src/core/decorators/services/pagination-append.decorator';
@@ -21,15 +22,15 @@ export class TasksService {
   async getAllTasks({
     projectId,
     pagination,
+    filters,
   }: {
     projectId: number;
     pagination: TSeqPagination;
+    filters?: WhereOptions;
   }) {
-    const currentProject = await this.projectService.getProjectById(projectId);
     // TODO: need to reorganize this, to avoid assigning params to pagination arg
-    const total = await currentProject.countTasks();
-    pagination.total = total;
-    return await currentProject.getTasks({
+    const { rows, count } = await Task.findAndCountAll({
+      where: { [Op.and]: [{ project_id: { [Op.eq]: projectId } }, filters] },
       include: [
         { model: User, as: 'creator', attributes: ['id', 'username'] },
         { model: User, as: 'executor', attributes: ['id', 'username'] },
@@ -39,6 +40,9 @@ export class TasksService {
       attributes: { exclude: ['project_id', 'executor_id', 'creator_id'] },
       ...pagination,
     });
+    pagination.total = count;
+    console.log(rows.length);
+    return rows;
   }
 
   async createTask(projectId: number, userId: number, task: CreateTaskDto) {

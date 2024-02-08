@@ -9,12 +9,16 @@ import {
   ParseIntPipe,
   Patch,
   Delete,
+  Logger,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { WhereOptions } from 'sequelize';
+import { Filters } from 'src/core/decorators/param/filters.decorator';
 import {
   Pagination,
   TSeqPagination,
 } from 'src/core/decorators/param/pagination.decorator';
+import { TASKS_FILTERS } from 'src/core/filters/tasks.filters';
 import { IsProjectExists } from 'src/core/guards/IsProjectExists.guard';
 import { IsTaskExists } from 'src/core/guards/IsTaskExists.guard';
 import { IsUserInProject } from 'src/core/guards/isUserInProject.guard';
@@ -25,12 +29,20 @@ import { TasksService } from './tasks.service';
 @Controller()
 export class TasksController {
   constructor(private tasksService: TasksService) {}
+  private readonly logger = new Logger(TasksController.name);
   @Get()
   async getAllTasks(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Pagination() pagination: TSeqPagination,
+    @Filters(TASKS_FILTERS)
+    filters: WhereOptions,
   ) {
-    return await this.tasksService.getAllTasks({ projectId, pagination });
+    this.logger.log('[GET] tasks by projectId');
+    return await this.tasksService.getAllTasks({
+      projectId,
+      pagination,
+      filters,
+    });
   }
   @Post()
   async createTask(
