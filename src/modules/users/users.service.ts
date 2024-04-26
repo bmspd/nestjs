@@ -32,7 +32,13 @@ export class UsersService {
     await dbUser.destroy({ force });
   }
   async findOneByEmail(email: string): Promise<User> {
-    return await this.userRepository.findOne<User>({ where: { email } });
+    return await this.userRepository.findOne<User>({
+      where: { email },
+      include: {
+        model: Profile,
+        attributes: { exclude: ['verify_link', 'id', 'user_id'] },
+      },
+    });
   }
 
   async findOneById(id: number): Promise<User> {

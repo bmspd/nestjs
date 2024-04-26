@@ -14,7 +14,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     forwardRef(() => UsersModule),
     JwtModule.register({
       secret: process.env.JWTKEY,
-      signOptions: { expiresIn: process.env.TOKEN_EXPIRATION },
+      // signOptions: { expiresIn: 5 },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],

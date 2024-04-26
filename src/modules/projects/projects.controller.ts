@@ -66,6 +66,7 @@ export class ProjectsController {
   @UseGuards(AuthGuard('jwt'), IsProjectExists, IsUserInProject)
   @Get(':projectId')
   async getProjectById(@Param('projectId', ParseIntPipe) projectId: number) {
+    console.log('get project BY id');
     return await this.projectService.getProjectInfo(projectId);
   }
   // TODO: limit on image size
@@ -86,7 +87,7 @@ export class ProjectsController {
     return new StreamableFile(file.file);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(new TrimTransformInterceptor(), FileInterceptor('image'))
   @Post()
   async createProject(
@@ -102,6 +103,7 @@ export class ProjectsController {
     )
     file: Express.Multer.File,
   ) {
+    console.log('I AM CREATING NEW PROJECT');
     return await this.projectService.create(project, req.user, file);
   }
 

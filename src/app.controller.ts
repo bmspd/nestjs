@@ -13,12 +13,12 @@ export class AppController {
   }
 
   @Get('/0')
-  geZero(): string {
-    return 'got zero!';
+  geZero() {
+    return { zero: 0 };
   }
   @UseGuards(AuthGuard('jwt'))
   @Get('/1')
-  getOne(): string {
-    return 'got one!';
+  getOne() {
+    return { message: 'got-one' };
   }
 }

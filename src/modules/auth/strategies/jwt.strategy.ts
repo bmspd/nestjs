@@ -14,6 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
   // payload - то, что было записано в jwt-token
   async validate(payload: any) {
+    console.log('access', payload);
     const user = await this.userService.findOneById(payload.id);
     if (!user)
       throw new UnauthorizedException(
